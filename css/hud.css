@@ -1,0 +1,28 @@
+#info {
+  float: right;
+}
+#info h2 {
+  font-size: 28px;
+  letter-spacing: 6px;
+  font-weight: normal;
+}
+#list .item {
+  padding: 10px 0;
+  display: block;
+  text-align: right;
+}
+#list .item .profile-image {
+  display: block;
+  float: right;
+  margin-left: 10px;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -o-border-radius: 50%;
+  -moz-border-radius: 50%;
+}
+#list .score {
+  color: white;
+  font-size: 25px;
+  line-height: 32px;
+  letter-spacing: 6px;
+}
