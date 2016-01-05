@@ -13,8 +13,8 @@
     "start": "node server.js"
   },
   "repository": {
-  "type": "git",
-  "url": "git://github.com/williammustaffa/snk.git"
+    "type": "git",
+    "url": "git://github.com/williammustaffa/snk.git"
   },
   "author": "",
   "license": "BSD-2-Clause"
