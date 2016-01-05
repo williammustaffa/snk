@@ -254,10 +254,10 @@ function snk() {
     draw();
     ctx.fillStyle="#FFFFFF";
     ctx.globalAlpha = 1;
-    window.requestAnimationFrame(loop);
   }
   /* do the loop */
   start();
-  window.requestAnimationFrame(loop);
+  socket.on("doLoop", loop);
+
 };
 snk();

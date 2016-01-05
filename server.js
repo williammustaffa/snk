@@ -39,3 +39,6 @@ io.on('connection', function(socket){
     players.splice(clientId, 1);
   });
 });
+setInterval(function() {
+  io.emit("doLoop", players);
+}, 1000/60);
