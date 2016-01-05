@@ -29,7 +29,7 @@ function snk() {
   var img = "https://scontent-gru2-1.xx.fbcdn.net/hphotos-xap1/v/t1.0-9/1476382_1628055357442458_255840188599367876_n.jpg?oh=65a8eb0b9d8b7ed389b793282f26756c&oe=570AB301";
   var img2 = "https://fbcdn-sphotos-g-a.akamaihd.net/hphotos-ak-xfl1/v/t1.0-9/12313624_932786450090359_4783161097257522815_n.jpg?oh=43e20035ad9c0ca64b51c6fe4e90461c&oe=571A5910&__gda__=1459499026_3a38898d0f560e3ab88e9777492f2672";
   addScore("William", img, "25000");
-  addScore("Lucas", img2, "00005");
+  addScore("Lucas", img2, "00006");
 
 
   var list = document.getElementById("list");
@@ -217,7 +217,7 @@ function snk() {
     instances.forEach(function(o) {
       o.draw();
     });
-  } 
+  }
   /* game over */
   function gameOver() {
     instances = [];
