@@ -92,11 +92,13 @@ function snk() {
     });
   });
   socket.on('add_new_player', function(data) {
-    new_piece = new Instance(data.x, data.y, "other");
-    new_piece.draw = function() {
-      this.draw_brick();
+    if (data.id !=o_player.id) {
+      new_piece = new Instance(data.x, data.y, "other");
+      new_piece.draw = function() {
+        this.draw_brick();
+      }
+      new_piece.id = data.id;
     }
-    new_piece.id = data.id;
   });
   socket.on('remove_player', function(data) {
     instances.forEach(function(obj, index) {
