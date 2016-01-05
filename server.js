@@ -18,12 +18,23 @@ http.listen(3000, function(){
 /* server */
 var players = [];
 io.on('connection', function(socket){
-  socket.on('add_player', function(socket){
-    io.emit("player_added", socket);
+  var clientId = 0;
+  socket.emit('set_instances', players);
+  socket.on('add_player', function(data){
+    /* add player to array and sent its id */
+    var index = players.push(data)-1;
+    data.id = index;
+    socket.emit("welcome_id", index);
+    io.emit('add_new_player', data);
+    clientId = index;
   });
-  console.log(players);
-  /* timer sync */
-  setInterval( function() {
-    io.emit("doLoop", players);
-  }, 1000/30);
+  socket.on('update_player', function(data) {
+    players[data.id] = data;
+    io.emit('receive_update', data);
+  });
+  socket.on('disconnect', function() {
+    console.log('Got disconnect!');
+    io.emit('remove_player', clientId);
+    players.splice(clientId, 1);
+  });
 });
