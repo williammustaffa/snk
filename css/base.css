@@ -30,6 +30,8 @@ body {
   z-index: 9999;
   display: block;
   margin: auto;
+  width: 640px;
+  height: 640px;
 }
 #canvas {
   position: relative;

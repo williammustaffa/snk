@@ -6,12 +6,9 @@ function snk() {
   var overlap, hud, canvas, ctx, instances, o_player, o_food, xx, yy, direction, pieces, game, score, currentDir, gradient;
   game = {width: 480, height: 640, background: "#2c3e50", contrast: "#9b59b6"}; //9EAD86
   view = {width: 640, height: 640};
-  overlap = document.getElementById("overlap");
-  overlap.setAttribute("class", "gradient");
 
   hud = document.getElementById("hud");
   console.log(hud);
-  hud.setAttribute("class", "box-shadow");
   hud.setAttribute("style", "background: "+ game.background+ "; width: "+ view.width +"px; height:"+ view.height+"px");
 
   canvas = document.getElementById('canvas');
