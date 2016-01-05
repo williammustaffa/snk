@@ -1,3 +1,6 @@
+var myId = Math.random().toString(36).substr(2, 16);
+
+var socket = io();
 function snk() {
   /* set canvas */
   var overlap, hud, canvas, ctx, instances, o_player, o_food, xx, yy, direction, pieces, game, score, currentDir, gradient;
@@ -17,47 +20,48 @@ function snk() {
   canvas.setAttribute("style", "border: 4px solid "+game.contrast+";");
   ctx = canvas.getContext('2d');
 
-  /* list */
-  var scorelist = [];
-  function addScore(name, image, score) {
-    var newScore = {};
-    newScore.user = name;
-    newScore.image = image;
-    newScore.score = score;
-    scorelist.push(newScore);
-  }
-  var img = "https://scontent-gru2-1.xx.fbcdn.net/hphotos-xap1/v/t1.0-9/1476382_1628055357442458_255840188599367876_n.jpg?oh=65a8eb0b9d8b7ed389b793282f26756c&oe=570AB301";
-  var img2 = "https://fbcdn-sphotos-g-a.akamaihd.net/hphotos-ak-xfl1/v/t1.0-9/12313624_932786450090359_4783161097257522815_n.jpg?oh=43e20035ad9c0ca64b51c6fe4e90461c&oe=571A5910&__gda__=1459499026_3a38898d0f560e3ab88e9777492f2672";
-  addScore("William", img, "25000");
-  addScore("Lucas", img2, "00006");
-
-
-  var list = document.getElementById("list");
-  list.innerHTML = "";
-  scorelist.forEach(function(obj, index) {
-    var item = {};
-    item.parent = document.createElement("div");
-    item.parent.setAttribute("class", "item");
-
-    item.profileImage = document.createElement("img");
-    item.profileImage.setAttribute("class", "profile-image");
-    item.profileImage.setAttribute("width", 32);
-    item.profileImage.setAttribute("height", 32);
-    item.profileImage.src = obj.image;
-
-    item.score = document.createElement("span");
-    item.score.setAttribute("class", "score");
-    item.score.innerHTML = obj.score;
-
-    item.parent.appendChild(item.profileImage);
-    item.parent.appendChild(item.score);
-
-    list.appendChild(item.parent);
-  });
+  // /* list */
+  // var scorelist = [];
+  // function addScore(name, image, score) {
+  //   var newScore = {};
+  //   newScore.user = name;
+  //   newScore.image = image;
+  //   newScore.score = score;
+  //   scorelist.push(newScore);
+  // }
+  // var img = "https://scontent-gru2-1.xx.fbcdn.net/hphotos-xap1/v/t1.0-9/1476382_1628055357442458_255840188599367876_n.jpg?oh=65a8eb0b9d8b7ed389b793282f26756c&oe=570AB301";
+  // var img2 = "https://fbcdn-sphotos-g-a.akamaihd.net/hphotos-ak-xfl1/v/t1.0-9/12313624_932786450090359_4783161097257522815_n.jpg?oh=43e20035ad9c0ca64b51c6fe4e90461c&oe=571A5910&__gda__=1459499026_3a38898d0f560e3ab88e9777492f2672";
+  // addScore("William", img, "25000");
+  // addScore("Lucas", img2, "00006");
+  //
+  //
+  // var list = document.getElementById("list");
+  // list.innerHTML = "";
+  // scorelist.forEach(function(obj, index) {
+  //   var item = {};
+  //   item.parent = document.createElement("div");
+  //   item.parent.setAttribute("class", "item");
+  //
+  //   item.profileImage = document.createElement("img");
+  //   item.profileImage.setAttribute("class", "profile-image");
+  //   item.profileImage.setAttribute("width", 32);
+  //   item.profileImage.setAttribute("height", 32);
+  //   item.profileImage.src = obj.image;
+  //
+  //   item.score = document.createElement("span");
+  //   item.score.setAttribute("class", "score");
+  //   item.score.innerHTML = obj.score;
+  //
+  //   item.parent.appendChild(item.profileImage);
+  //   item.parent.appendChild(item.score);
+  //
+  //   list.appendChild(item.parent);
+  // });
 
   /* instance */
   instances = [];
   function Instance(x, y, type) {
+    this.id = 0;
     this.x = x;
     this.y = y;
     this.width = 32;
@@ -101,6 +105,7 @@ function snk() {
 
   function start() {
     direction = null;
+    /* load otherplayers */
     /* ==============player=========== */
     xx = Math.round((game.width/2)/32)*32-32;
     yy = Math.round((game.height/2)/32)*32;
@@ -192,7 +197,14 @@ function snk() {
     o_player.draw = function() {
       this.draw_brick()
     }
-
+    /* sendplayer */
+    var me =  {
+      id: myId,
+      x: o_player.x,
+      y: o_player.y,
+      pieces: []
+    };
+    socket.emit("add_player", me);
     /* ============bullet spawner========== */
     xx = Math.round(Math.random()*(game.width-32)/32)*32;
     yy = Math.round(Math.random()*(game.height-32)/32)*32;
@@ -224,6 +236,16 @@ function snk() {
     start();
   };
 
+  socket.on("player_added", function(ng) {
+    if (ng.id != myId) {
+      var new_guy = new Instance(ng.x, ng.y, "enemy");
+      new_guy.id = ng.id;
+      new_guy.draw = function() {
+        this.draw_brick()
+      }
+      instances.push(new_guy);
+    }
+  });
   /* game loop */
   function loop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -231,10 +253,25 @@ function snk() {
     draw();
     ctx.fillStyle="#FFFFFF";
     ctx.globalAlpha = 1;
-    window.requestAnimationFrame(loop);
+    socket.emit("update_player", {
+      id: myId,
+      x: o_player.x,
+      y: o_player.y,
+      pieces: []
+    });
   }
   /* do the loop */
   start();
-  window.requestAnimationFrame(loop);
+  socket.on("doLoop", function( players ) {
+    players.forEach( function(o,index) {
+      for(i=0;i<instances.length-1;i++) {
+        if (instances[i].id == o.id) {
+          instances[i].x = o.x;
+          instances[i].y = o.y;
+        }
+      }
+    });
+    loop();
+  })
 };
 snk();
