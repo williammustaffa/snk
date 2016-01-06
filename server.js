@@ -41,4 +41,4 @@ io.on('connection', function(socket){
 });
 setInterval(function() {
   io.emit("doLoop", players);
-}, 1);
+}, 1000/60);
