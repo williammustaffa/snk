@@ -2,6 +2,9 @@
   padding: 0;
   mrgin: 0;
 }
+body, html {
+  overflow: hidden;
+}
 body {
   font-family: "bebas_neueregular", sans-serif;
   color: #9b59b6;
@@ -28,7 +31,7 @@ textarea, input {
   -moz-box-shadow: 0 5px 10px -5px black;
 }
 #overlap, #modal-overlay {
-  position:fixed;
+  position: absolute;
   top:0;
   left: 0;
   height: 100vh;

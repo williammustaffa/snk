@@ -28,6 +28,9 @@ function set_grid(position, size) {
 /******************************
 ************* GAME ************
 ******************************/
+// constants
+var PLAYER = "player";
+var FOOD = "food";
 var game = {width: 480, height: 640 , players: []}; //9EAD86
 io.on('connection', function(socket){
   var user_id = false;
@@ -45,14 +48,17 @@ io.on('connection', function(socket){
     };
     user_id = nPlayer.id;
     game.players.push(nPlayer);
+    console.log("[Player connected]", nPlayer.name)
     socket.emit("add_player", nPlayer);
+  }
+  function check_collision(player, type) {
+
   }
   /* send the game info */
   function game_request() {
     socket.emit("game_request", game);
   }
   function move_request(pack) {
-    //game.players[pack.index].direction = pack.direction;
     for(i=0;i<game.players.length;i++) {
       if (game.players[i].id == pack.index) {
         game.players[i].direction = pack.direction;
@@ -61,8 +67,13 @@ io.on('connection', function(socket){
   }
   /* on user disconnect */
   function disconnect() {
-    if (user_id!=false) {
-      game.players.splice(user_id, 1);
+    if (user_id!==false) {
+      for(i=0;i<game.players.length;i++) {
+        if (game.players[i].id == user_id) {
+          console.log("[Player disconnected]", game.players[i].name);
+          game.players.splice(i, 1);
+        }
+      }
     }
   }
   /* socket manager */

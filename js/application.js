@@ -1,3 +1,20 @@
+/******************************
+*******  LOADING CONFIG  ******
+******************************/
+$("#loading").each(function() {
+  var self = $(this), pos_top, pos_left;
+  var adjustpos = function() {
+    pos_top = $(window).height()/2-32;
+    pos_left = $(window).width()/2-32;
+    self.css({
+      top: pos_top,
+      left: pos_left
+    });
+  }
+  adjustpos();
+  $(window).on('resize', adjustpos);
+});
+
 $(function(){
   var snk = new Snk();
   /******************************
@@ -48,7 +65,9 @@ $(function(){
         color: c_value,
         name: name
       };
-      snk.init(setup);
+      setTimeout(function() {
+        snk.init(setup);
+      }, 1000);
     } else {
       $("input#name").trigger("focus").addClass("disabled");
     }
