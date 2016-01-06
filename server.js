@@ -65,7 +65,7 @@ io.on('connection', function(socket){
       game.players.splice(user_id, 1);
     }
   }
-  /* socket manager */move_request
+  /* socket manager */
   socket.on('add_player', add_player);
   socket.on('move_request', move_request);
   socket.on('game_request', game_request);
