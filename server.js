@@ -207,4 +207,4 @@ function update() {
   move_players();
   io.emit("update", game);
 }
-setInterval(update, 100);
+setInterval(update, 500);
