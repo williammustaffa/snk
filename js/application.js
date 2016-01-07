@@ -39,7 +39,6 @@ $(function(){
     var me = $(this);
     var button = $("a#play");
     name = me.val();
-    console.log(name);
     if (name.match(/^[\w]+$/g)) {
       me.removeClass('disabled');
       canPlay = true;
@@ -50,16 +49,14 @@ $(function(){
       canPlay = false;
     }
   });
-  $(document).on("click", "#modal.no-clickable", function() {
+  $(document).on("click", ".no-clickable", function() {
     return false;
   });
-  $(document).on("click", "#play", function() {
+  $(document).on("click", "#play, #restart", function() {
     if (canPlay == true ) {
-      $("#modal").addClass("no-clickable").fadeOut(1000);
+      $("#join-modal, #quick-play-modal").addClass("no-clickable").fadeOut(1000);
       $("#loading").fadeIn();
       var c_value = $("input[name=color]:checked").val();
-      console.log("Color set as: ", c_value);
-      console.log("Name set as: ", name);
       /* sending data */
       var setup = {
         color: c_value,

@@ -14,20 +14,14 @@
     <div id="overlap" class="gradient" >
       <div id="hud" class="box-shadow">
         <canvas id="snk-view"></canvas>
-        <!-- sidebar -->
-        <section id="info">
-          <h2>Scores</h2>
-          <div id="list">
-            <noscript class="item">
-              <img class="profile-image" src="" width="32" height="32">
-              <span class="score">25000</span>
-            </noscript>
-          </div>
-        </section>
+      </div>
+      <div id="score" class="black-overlay box-shadow-left">
+        <h2>Leaderboard</h2>
+        <ul></ul>
       </div>
     </div>
-    <div id="modal-overlay" class="gradient">
-      <div id="modal" class="box-shadow">
+    <div id="modal-overlay" class="black-overlay">
+      <div id="join-modal" class="modal box-shadow">
         <h2>Choose a battle name:</h2>
         <input id="name" class="transition" type='text' maxlength="8"/>
         <h2>Choose a color:</h2>
@@ -39,7 +33,14 @@
           <input name="color" type='radio' value="#3498db" />
           <input name="color" type='radio' value="#c0392b" />
         </div>
-        <a href="javascript: void(0)" class="transition" id="play">Join</a>
+        <a href="javascript: void(0)" class="transition button" id="play">Join</a>
+      </div>
+      <div id='quick-play-modal' class="modal">
+        <h2>Whoops...</h2>
+        <h3>keep trying bitch</h3>
+        <img src="./images/dead.png" class="modal-image">
+        <br>
+        <a href="javascript: void(0)" class="transition button" id="restart">Try again</a>
       </div>
       <div id='loading'>
         <div class="block box-shadow"></div>

@@ -9,8 +9,14 @@ body {
   font-family: "bebas_neueregular", sans-serif;
   color: #9b59b6;
 }
+img {
+  pointer-events: none;
+}
 textarea, input {
   outline: none;
+}
+.black-overlay {
+  background: rgba(0,0,0,0.7);
 }
 .gradient {
   background: -webkit-linear-gradient(#2c3e50, #9b59b6);
@@ -30,6 +36,12 @@ textarea, input {
   -o-box-shadow: 0 5px 10px -5px black;
   -moz-box-shadow: 0 5px 10px -5px black;
 }
+.box-shadow-left {
+  box-shadow: -5px 0 10px -5px black;
+  -webkit-box-shadow: -5px 0 10px -5px black;
+  -o-box-shadow: -5px 0 10px -5px black;
+  -moz-box-shadow: -5px 0 10px -5px black;
+}
 #overlap, #modal-overlay {
   position: absolute;
   top:0;
@@ -44,6 +56,12 @@ textarea, input {
   margin: auto;
   width: 640px;
   height: 640px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
 }
 #snk-view {
   position: relative;
