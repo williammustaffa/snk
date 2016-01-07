@@ -207,4 +207,6 @@ function update() {
   move_players();
   io.emit("update", game);
 }
-setInterval(update, 500);
+/* require loop */
+var loop = require("./loop");
+loop.call(update, 200);
