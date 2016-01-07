@@ -208,5 +208,5 @@ function update() {
   io.emit("update", game);
 }
 /* require loop */
-var loop = require("./loop");
-loop.call(update, 200);
+//var loop = require("./loop");
+setInterval(update, 200);
