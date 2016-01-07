@@ -61,7 +61,7 @@ io.on('connection', function(socket){
     var nPlayer = {
       id: (new Date()).getTime(),
       color: data.color,
-      score: Math.round(Math.random()*50),
+      score: 0,
       type: PLAYER,
       name: data.name,
       direction: false,
