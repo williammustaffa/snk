@@ -49,22 +49,14 @@ textarea, input {
   height: 100vh;
   width: 100vw;
 }
-#hud {
-  background: #2c3e50;
-  padding: 20px;
+#hud:after {
+  content: "";
+  clear:both;
   display: block;
-  margin: auto;
-  width: 640px;
-  height: 640px;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
 }
 #snk-view {
-  position: relative;
+  background: rgba(0,0,0,0.5);
+  position: absolute;
   float: left;
-  border: 4px solid #9b59b6;
+  box-sizing: border-box;
 }

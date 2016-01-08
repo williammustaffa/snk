@@ -37,10 +37,10 @@ function degtorad(Value) {
 // constants
 var PLAYER = "player";
 var FOOD = "food";
-var GRID = 16;
-var MEALS = 7;
-var INITIAL_COUNTER = 10;
-var game = {width: 640, height: 640 , grid: GRID, food: [], players: []}; //9EAD86
+var GRID = 25;
+var MEALS = 4;
+var INITIAL_COUNTER = 5;
+var game = {width: 40*GRID, height: 30*GRID , grid: GRID, food: [], players: []}; //9EAD86
 function add_food() {
   game.food.push({
     id: false,

@@ -14,6 +14,23 @@ $("#loading").each(function() {
   adjustpos();
   $(window).on('resize', adjustpos);
 });
+function adjustCanvasPos() {
+  $("#snk-view").each(function() {
+    var self = $(this), pos_top, pos_left;
+    var adjustpos = function() {
+      var wWidth = $(window).width()-250;
+      var wHeight = $(window).height();
+      if (wHeight>self.height()) pos_top = (wHeight/2)-(self.height()/2);
+      if (wWidth>self.width()) pos_left = (wWidth/2)-(self.width()/2);
+      self.css({
+        top: pos_top,
+        left: pos_left
+      });
+    }
+    adjustpos();
+  });
+}
+$(window).on('resize', adjustCanvasPos);
 
 $(function(){
   var snk = new Snk();

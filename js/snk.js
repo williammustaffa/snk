@@ -15,6 +15,7 @@ function Snk() {
     canvas.setAttribute("height", data.height);
     canvas.setAttribute("width", data.width);
     context = canvas.getContext("2d");
+    adjustCanvasPos();
   }
   /* draw brick */
   function draw_brick(x, y, color) {
@@ -66,7 +67,7 @@ function Snk() {
       });
     });
     /* draw food */
-    foodAlpha += 5;
+    foodAlpha += 3;
     var alpha = Math.min(1,Math.abs(Math.sin(foodAlpha *Math.PI /180)));
     context.globalAlpha = alpha;
     data.food.forEach(function(instance) {
