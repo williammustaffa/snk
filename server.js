@@ -39,7 +39,7 @@ var PLAYER = "player";
 var FOOD = "food";
 var GRID = 25;
 var MEALS = 4;
-var INITIAL_COUNTER = 5;
+var INITIAL_COUNTER = 30;
 var game = {width: 40*GRID, height: 30*GRID , grid: GRID, food: [], players: []}; //9EAD86
 function add_food() {
   game.food.push({
@@ -196,7 +196,7 @@ function move_players() {
           other.y = ypos;
           instance.pieces.push({x: obj.x, y: obj.y});
           instance.score += 4;
-           if (instance.timer.total > 1) instance.timer.total -= 0.25; else instance.timer.total = 1;
+          //if (instance.timer.total > 1) instance.timer.total -= 0.1; else instance.timer.total = 1;
           update_score();
         }
         if (parent.type == PLAYER) {
@@ -226,7 +226,8 @@ function move_players() {
 function update() {
   move_players();
   io.emit("update", game);
+
 }
 /* require loop */
 //var loop = require("./loop");
-setInterval(update, 1000/30);
+setInterval(update, 1000/60);
