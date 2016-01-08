@@ -1,7 +1,8 @@
 /******************************
 ********  SERVER CONFIG *******
 ******************************/
-var express = require('express'), app = express();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
@@ -15,9 +16,10 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/app.html');
 });
 
-var port = process.env.PORT || 3000;
-http.listen(port, function(){
-  console.log('listening on *: '+ port);
+var gameport = process.env.PORT || 3000;
+
+http.listen(gameport, function(){
+  console.log('listening on: '+ gameport);
 });
 /******************************
 *********** FUCNTIONS *********
@@ -36,17 +38,24 @@ function degtorad(Value) {
 var PLAYER = "player";
 var FOOD = "food";
 var GRID = 16;
+var MEALS = 7;
+var INITIAL_COUNTER = 10;
 var game = {width: 640, height: 640 , grid: GRID, food: [], players: []}; //9EAD86
-game.food.push({
-  id: false,
-  type: FOOD,
-  color: "#FFFFFF",
-  pieces: [{
-    x: set_grid(Math.random()*(game.width-GRID), GRID),
-    y: set_grid(Math.random()*(game.height-GRID), GRID)
-  }]
-})
+function add_food() {
+  game.food.push({
+    id: false,
+    type: FOOD,
+    color: "#FFFFFF",
+    pieces: [{
+      x: set_grid(Math.random()*(game.width-GRID), GRID),
+      y: set_grid(Math.random()*(game.height-GRID), GRID)
+    }]
+  });
+}
 
+for(i=0; i<MEALS;i++) {
+  add_food();
+}
 io.on('connection', function(socket){
   var user_id = false;
   /* add player */
@@ -63,6 +72,8 @@ io.on('connection', function(socket){
       color: data.color,
       score: 0,
       type: PLAYER,
+      speed: 1,
+      timer: {total: INITIAL_COUNTER, count: INITIAL_COUNTER},
       name: data.name,
       direction: false,
       new_dir: false,
@@ -70,7 +81,9 @@ io.on('connection', function(socket){
       dirY: 0,
       pieces: [{
         x: xpos,
-        y: ypos
+        y: ypos,
+        nextX: xpos,
+        nextY: ypos
       }]
     };
     user_id = nPlayer.id;
@@ -88,7 +101,8 @@ io.on('connection', function(socket){
       if (game.players[i].id === pack.index) {
         var limit = Math.abs(game.players[i].direction - pack.direction);
         if ((limit <= 90 || limit >= 270 || game.players[i].direction === false) || game.players[i].pieces.length == 1) {
-          game.players[i].new_dir = pack.direction;
+          var o_player = game.players[i];
+          o_player.new_dir = pack.direction;
         }
       }
     }
@@ -163,44 +177,50 @@ function game_over(user_id) {
 }
 function move_players() {
   game.players.forEach(function(instance) {
-    /* only update direction on step */
-    instance.direction = instance.new_dir;
-    instance.dirX =  Math.round(Math.cos(degtorad(instance.direction)));
-    instance.dirY = -Math.round(Math.sin(degtorad(instance.direction)));
-    collision(instance, instance.dirX, instance.dirY, function(other, parent) {
-      if (parent.type == FOOD) {
-        var xpos, ypos;
-        xpos = set_grid(Math.random()*(game.width-GRID), GRID);
-        ypos = set_grid(Math.random()*(game.height-GRID), GRID);
-        while (!place_free(xpos, ypos)) {
+    var obj = instance.pieces[0];
+    if (instance.timer.count<=0) {
+      instance.direction = instance.new_dir;
+      instance.dirX =  Math.round(Math.cos(degtorad(instance.new_dir)))*GRID;
+      instance.dirY = -Math.round(Math.sin(degtorad(instance.new_dir)))*GRID;
+      /* only update direction on step */
+      collision(instance, instance.dirX, instance.dirY, function(other, parent) {
+        if (parent.type == FOOD) {
+          var xpos, ypos;
           xpos = set_grid(Math.random()*(game.width-GRID), GRID);
           ypos = set_grid(Math.random()*(game.height-GRID), GRID);
+          while (!place_free(xpos, ypos)) {
+            xpos = set_grid(Math.random()*(game.width-GRID), GRID);
+            ypos = set_grid(Math.random()*(game.height-GRID), GRID);
+          }
+          other.x = xpos;
+          other.y = ypos;
+          instance.pieces.push({x: obj.x, y: obj.y});
+          instance.score += 4;
+           if (instance.timer.total > 1) instance.timer.total -= 0.25; else instance.timer.total = 1;
+          update_score();
         }
-        other.x = xpos;
-        other.y = ypos;
-        instance.pieces.push({x:0, y:0});
-        instance.score += 4;
-        update_score();
+        if (parent.type == PLAYER) {
+          console.log("Collided with player", parent.name, "on direction", instance.direction);
+          game_over(instance.id);
+        }
+      });
+      for (i=instance.pieces.length-1; i>0; i--) {
+        instance.pieces[i].x = instance.pieces[i-1].x;
+        instance.pieces[i].y = instance.pieces[i-1].y;
       }
-      if (parent.type == PLAYER) {
+      if ((instance.direction === 90 && obj.y <= 0) || (instance.direction === 270 && obj.y+GRID >= game.height) || (instance.direction === 180 && obj.x <= 0) || (instance.direction === 0 && obj.x+GRID >= game.width)) {
         game_over(instance.id);
       }
-    });
-
-    var obj = instance.pieces[0];
-
-    for (i=instance.pieces.length-1; i>0; i--) {
-      instance.pieces[i].x = instance.pieces[i-1].x;
-      instance.pieces[i].y = instance.pieces[i-1].y;
+      if (instance.direction !== false) {
+        obj.x += instance.speed * instance.dirX;
+        obj.y += instance.speed * instance.dirY;
+      }
+      instance.timer.count = instance.timer.total;
+    } else {
+      instance.timer.count -= 1;
     }
-    if ((instance.direction === 90 && obj.y <= 0) || (instance.direction === 270 && obj.y+GRID >= game.height) || (instance.direction === 180 && obj.x <= 0) || (instance.direction === 0 && obj.x+GRID >= game.width)) {
-      game_over(instance.id);
-    }
-
-    if (instance.direction === 90 && obj.y > 0) obj.y -= GRID;
-    if (instance.direction === 270 && obj.y+GRID < game.height) obj.y += GRID;
-    if (instance.direction === 180 && obj.x > 0) obj.x -= GRID;
-    if (instance.direction === 0 && obj.x+GRID < game.width) obj.x += GRID;
+    // obj.x += (obj.x - obj.nextX) /5;
+    // obj.y += (obj.y - obj.nextY) /5;
   });
 }
 function update() {
@@ -209,4 +229,4 @@ function update() {
 }
 /* require loop */
 //var loop = require("./loop");
-setInterval(update, 200);
+setInterval(update, 1000/30);

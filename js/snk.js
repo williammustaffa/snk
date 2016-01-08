@@ -8,7 +8,7 @@ function Snk() {
   /* admin commands */
   this.running = false;
 
-  var socket = io(), game_data, canvas, grid, viewport = {}, context, foodAlpha = 1, player = undefined, self = this;
+  var socket = io(), game_data, game_draw, canvas, grid, viewport = {}, context, foodAlpha = 1, player = undefined, self = this;
   socket.emit("game_request").on("game_request", game_request);
   function set_canvas(data) {
     canvas = document.getElementById('snk-view');;
@@ -37,6 +37,7 @@ function Snk() {
     self.running = true;
     grid = data.grid;
     set_canvas(data);
+    game_data = data;
     socket.emit("update_score");
   }
   /* check if your snake is dead, hehehe*/
@@ -49,44 +50,47 @@ function Snk() {
   function update(data) {
     game_data = data;
   }
-  function draw() {
+  function step() {
     if (self.running == true && game_data != undefined) {
-      var data = game_data;
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      /* draw blocks */
-      data.players.forEach(function(instance) {
-        instance.pieces.forEach(function(obj, ind){
-          draw_brick(obj.x, obj.y, instance.color);
-        });
-      });
-      /* draw food */
-      foodAlpha += 5;
-      var alpha = Math.min(1,Math.abs(Math.sin(foodAlpha *Math.PI /180)));
-      context.globalAlpha = alpha;
-      data.food.forEach(function(instance) {
-        instance.pieces.forEach(function(obj, ind){
-          draw_brick(obj.x, obj.y, instance.color);
-        });
-      });
-      context.globalAlpha = 1;
-      /* draw name */
-      context.globalAlpha = 0.5;
-      data.players.forEach(function(instance) {
-        instance.pieces.forEach(function(obj, ind){
-          if (ind == 0) {
-            context.fillStyle = "#000";
-            context.font = '16px bebas_neueregular';
-            context.textAlign = 'center';
-            var width = context.measureText(instance.name).width+grid/2;
-            context.fillRect(obj.x+grid/2-width/2, obj.y-16*2, width, 21);
-            context.fillStyle = instance.color;
-            context.fillText(instance.name, obj.x+grid/2, obj.y-16);
-          }
-        });
-      });
-      context.globalAlpha = 1;
+      draw();
     }
-    window.requestAnimationFrame(draw);
+    window.requestAnimationFrame(step);
+  }
+  function draw() {
+    var data = game_data; // put game_data if wants to draw directly the game
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    /* draw blocks */
+    data.players.forEach(function(instance) {
+      instance.pieces.forEach(function(obj, ind){
+        draw_brick(obj.x, obj.y, instance.color);
+      });
+    });
+    /* draw food */
+    foodAlpha += 5;
+    var alpha = Math.min(1,Math.abs(Math.sin(foodAlpha *Math.PI /180)));
+    context.globalAlpha = alpha;
+    data.food.forEach(function(instance) {
+      instance.pieces.forEach(function(obj, ind){
+        draw_brick(obj.x, obj.y, instance.color);
+      });
+    });
+    context.globalAlpha = 1;
+    /* draw name */
+    context.globalAlpha = 0.5;
+    data.players.forEach(function(instance) {
+      instance.pieces.forEach(function(obj, ind){
+        if (ind == 0) {
+          context.fillStyle = "#000";
+          context.font = '16px bebas_neueregular';
+          context.textAlign = 'center';
+          var width = context.measureText(instance.name).width+grid/2;
+          context.fillRect(obj.x+grid/2-width/2, obj.y-16*2, width, 21);
+          context.fillStyle = instance.color;
+          context.fillText(instance.name, obj.x+grid/2, obj.y-16);
+        }
+      });
+    });
+    context.globalAlpha = 1;
   }
   function move_request(e) {
     if (self.running == true && player != undefined) {
@@ -126,7 +130,7 @@ function Snk() {
     });
   }
   window.addEventListener("keydown", move_request);
-  window.requestAnimationFrame(draw);
+  window.requestAnimationFrame(step);
   socket.on("player_died", check_death);
   socket.on("update_score", update_score);
   socket.on("update", update);
